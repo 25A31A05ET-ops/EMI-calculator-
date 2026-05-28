@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Loan Balance Sheet Generator</title>
+
+<style>
+    body {
+        font-family: Arial;
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        display: flex;
+        justify-content: center;
+        padding: 20px;
+    }
+
+    .card {
+        width: 90%;
+        max-width: 900px;
+        background: rgba(255,255,255,0.15);
+        backdrop-filter: blur(10px);
+        padding: 20px;
+        border-radius: 15px;
+        color: white;
+        text-align: center;
+    }
+
+    input {
+        width: 30%;
+        padding: 10px;
+        margin: 5px;
+        border-radius: 8px;
+        border: none;
+    }
+
+    button {
+        padding: 10px 20px;
+        border: none;
+        border-radius: 8px;
+        background: white;
+        cursor: pointer;
+        font-weight: bold;
+        margin-top: 10px;
+    }
+
+    table {
+        width: 100%;
+        margin-top: 20px;
+        border-collapse: collapse;
+        display: none;
+    }
+
+    th, td {
+        border: 1px solid white;
+        padding: 6px;
+        font-size: 13px;
+        text-align: center;
+    }
+
+    th {
+        background: rgba(255,255,255,0.3);
+    }
+</style>
+</head>
+
+<body>
+
+<div class="card">
+    <h2>📊 Loan Balance Sheet Generator</h2>
+
+    <input id="p" type="number" placeholder="Loan Amount">
+    <input id="r" type="number" placeholder="Interest Rate %">
+    <input id="m" type="number" placeholder="Months">
+    <input id="emi" type="number" placeholder="EMI Amount">
+
+    <br>
+    <button onclick="generate()">Generate Sheet</button>
+
+    <table id="table">
+        <thead>
+            <tr>
+                <th>Month</th>
+                <th>Opening Balance</th>
+                <th>Interest</th>
+                <th>Principal</th>
+                <th>EMI</th>
+                <th>Closing Balance</th>
+            </tr>
+        </thead>
+        <tbody id="body"></tbody>
+    </table>
+</div>
+
+<script>
+function generate() {
+    let principal = Number(document.getElementById("p").value);
+    let rate = Number(document.getElementById("r").value) / 12 / 100;
+    let months = Number(document.getElementById("m").value);
+    let emi = Number(document.getElementById("emi").value);
+
+    if (principal <= 0 || rate <= 0 || months <= 0 || emi <= 0) {
+        alert("⚠️ Enter all valid values");
+        return;
+    }
+
+    let balance = principal;
+    let body = document.getElementById("body");
+    body.innerHTML = "";
+
+    for (let i = 1; i <= months; i++) {
+
+        let interest = balance * rate;
+        let principalPaid = emi - interest;
+        let closing = balance - principalPaid;
+
+        if (closing < 0) closing = 0;
+
+        let row = `
+        <tr>
+            <td>${i}</td>
+            <td>${balance.toFixed(2)}</td>
+            <td>${interest.toFixed(2)}</td>
+            <td>${principalPaid.toFixed(2)}</td>
+            <td>${emi.toFixed(2)}</td>
+            <td>${closing.toFixed(2)}</td>
+        </tr>
+        `;
+
+        body.innerHTML += row;
+        balance = closing;
+    }
+
+    document.getElementById("table").style.display = "table";
+}
+</script>
+
+</body>
+</html>
